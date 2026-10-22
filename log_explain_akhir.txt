@@ -1,0 +1,312 @@
+=== Indeks 1 (B-Tree tunggal) untuk query 1
+CREATE INDEX
+=== Indeks 2 (Composite) untuk query 2: kolom = di depan, kolom rentang di belakang
+CREATE INDEX
+=== Indeks 3 (Partial) untuk query 3: hanya baris dengan harga Rp250.000 ke atas
+CREATE INDEX
+VACUUM
+VACUUM
+=== Ukuran indeks
+         indeks         |     tabel     | ukuran  
+------------------------+---------------+---------
+ idx_detail_mahal       | detail_servis | 5504 kB
+ idx_servis_mekanik_tgl | servis        | 4960 kB
+ idx_servis_motor       | servis        | 6232 kB
+(3 rows)
+
+=== Query 1: riwayat servis satu motor berdasarkan plat nomor (percobaan 1)
+                                                                   QUERY PLAN                                                                    
+-------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=33.03..33.04 rows=4 width=21) (actual time=0.028..0.029 rows=8 loops=1)
+   Sort Key: s.tgl_servis
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=31
+   ->  Nested Loop  (cost=5.02..32.99 rows=4 width=21) (actual time=0.018..0.026 rows=8 loops=1)
+         Buffers: shared hit=31
+         ->  Nested Loop  (cost=4.88..32.36 rows=4 width=12) (actual time=0.016..0.020 rows=8 loops=1)
+               Buffers: shared hit=15
+               ->  Index Scan using motor_plat_nomor_key on motor mt  (cost=0.42..8.44 rows=1 width=4) (actual time=0.011..0.011 rows=1 loops=1)
+                     Index Cond: ((plat_nomor)::text = 'L 1005 AF'::text)
+                     Buffers: shared hit=4
+               ->  Bitmap Heap Scan on servis s  (cost=4.46..23.88 rows=5 width=16) (actual time=0.004..0.008 rows=8 loops=1)
+                     Recheck Cond: (id_motor = mt.id_motor)
+                     Heap Blocks: exact=8
+                     Buffers: shared hit=11
+                     ->  Bitmap Index Scan on idx_servis_motor  (cost=0.00..4.46 rows=5 width=0) (actual time=0.002..0.002 rows=8 loops=1)
+                           Index Cond: (id_motor = mt.id_motor)
+                           Buffers: shared hit=3
+         ->  Index Scan using mekanik_pkey on mekanik m  (cost=0.14..0.16 rows=1 width=17) (actual time=0.000..0.000 rows=1 loops=8)
+               Index Cond: (id_mekanik = s.id_mekanik)
+               Buffers: shared hit=16
+ Planning:
+   Buffers: shared hit=191 read=5
+ Planning Time: 0.316 ms
+ Execution Time: 0.034 ms
+(25 rows)
+
+=== Query 1: riwayat servis satu motor berdasarkan plat nomor (percobaan 2)
+                                                                   QUERY PLAN                                                                    
+-------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=33.03..33.04 rows=4 width=21) (actual time=0.020..0.021 rows=8 loops=1)
+   Sort Key: s.tgl_servis
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=31
+   ->  Nested Loop  (cost=5.02..32.99 rows=4 width=21) (actual time=0.015..0.019 rows=8 loops=1)
+         Buffers: shared hit=31
+         ->  Nested Loop  (cost=4.88..32.36 rows=4 width=12) (actual time=0.014..0.016 rows=8 loops=1)
+               Buffers: shared hit=15
+               ->  Index Scan using motor_plat_nomor_key on motor mt  (cost=0.42..8.44 rows=1 width=4) (actual time=0.011..0.011 rows=1 loops=1)
+                     Index Cond: ((plat_nomor)::text = 'L 1005 AF'::text)
+                     Buffers: shared hit=4
+               ->  Bitmap Heap Scan on servis s  (cost=4.46..23.88 rows=5 width=16) (actual time=0.003..0.004 rows=8 loops=1)
+                     Recheck Cond: (id_motor = mt.id_motor)
+                     Heap Blocks: exact=8
+                     Buffers: shared hit=11
+                     ->  Bitmap Index Scan on idx_servis_motor  (cost=0.00..4.46 rows=5 width=0) (actual time=0.001..0.001 rows=8 loops=1)
+                           Index Cond: (id_motor = mt.id_motor)
+                           Buffers: shared hit=3
+         ->  Index Scan using mekanik_pkey on mekanik m  (cost=0.14..0.16 rows=1 width=17) (actual time=0.000..0.000 rows=1 loops=8)
+               Index Cond: (id_mekanik = s.id_mekanik)
+               Buffers: shared hit=16
+ Planning:
+   Buffers: shared hit=18
+ Planning Time: 0.069 ms
+ Execution Time: 0.025 ms
+(25 rows)
+
+=== Query 1: riwayat servis satu motor berdasarkan plat nomor (percobaan 3)
+                                                                   QUERY PLAN                                                                    
+-------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=33.03..33.04 rows=4 width=21) (actual time=0.012..0.013 rows=8 loops=1)
+   Sort Key: s.tgl_servis
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=31
+   ->  Nested Loop  (cost=5.02..32.99 rows=4 width=21) (actual time=0.007..0.011 rows=8 loops=1)
+         Buffers: shared hit=31
+         ->  Nested Loop  (cost=4.88..32.36 rows=4 width=12) (actual time=0.006..0.008 rows=8 loops=1)
+               Buffers: shared hit=15
+               ->  Index Scan using motor_plat_nomor_key on motor mt  (cost=0.42..8.44 rows=1 width=4) (actual time=0.004..0.004 rows=1 loops=1)
+                     Index Cond: ((plat_nomor)::text = 'L 1005 AF'::text)
+                     Buffers: shared hit=4
+               ->  Bitmap Heap Scan on servis s  (cost=4.46..23.88 rows=5 width=16) (actual time=0.002..0.003 rows=8 loops=1)
+                     Recheck Cond: (id_motor = mt.id_motor)
+                     Heap Blocks: exact=8
+                     Buffers: shared hit=11
+                     ->  Bitmap Index Scan on idx_servis_motor  (cost=0.00..4.46 rows=5 width=0) (actual time=0.001..0.001 rows=8 loops=1)
+                           Index Cond: (id_motor = mt.id_motor)
+                           Buffers: shared hit=3
+         ->  Index Scan using mekanik_pkey on mekanik m  (cost=0.14..0.16 rows=1 width=17) (actual time=0.000..0.000 rows=1 loops=8)
+               Index Cond: (id_mekanik = s.id_mekanik)
+               Buffers: shared hit=16
+ Planning:
+   Buffers: shared hit=18
+ Planning Time: 0.061 ms
+ Execution Time: 0.016 ms
+(25 rows)
+
+=== Query 2: jumlah servis per bulan satu mekanik sejak 1 Januari 2025 (percobaan 1)
+                                                                          QUERY PLAN                                                                           
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=199.00..201.52 rows=1005 width=53) (actual time=2.407..2.407 rows=12 loops=1)
+   Sort Key: (to_char((s.tgl_servis)::timestamp with time zone, 'YYYY-MM'::text))
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=5 read=6
+   ->  HashAggregate  (cost=133.81..148.89 rows=1005 width=53) (actual time=2.387..2.392 rows=12 loops=1)
+         Group Key: to_char((s.tgl_servis)::timestamp with time zone, 'YYYY-MM'::text), m.nama
+         Batches: 1  Memory Usage: 73kB
+         Buffers: shared hit=2 read=6
+         ->  Nested Loop  (cost=0.42..113.41 rows=2721 width=45) (actual time=1.583..2.118 rows=2821 loops=1)
+               Buffers: shared hit=2 read=6
+               ->  Seq Scan on mekanik m  (cost=0.00..1.75 rows=1 width=17) (actual time=0.002..0.003 rows=1 loops=1)
+                     Filter: (id_mekanik = 7)
+                     Rows Removed by Filter: 59
+                     Buffers: shared hit=1
+               ->  Index Only Scan using idx_servis_mekanik_tgl on servis s  (cost=0.42..70.84 rows=2721 width=8) (actual time=0.010..0.095 rows=2821 loops=1)
+                     Index Cond: ((id_mekanik = 7) AND (tgl_servis >= '2025-01-01'::date))
+                     Heap Fetches: 0
+                     Buffers: shared hit=1 read=6
+ Planning:
+   Buffers: shared hit=11
+ Planning Time: 0.032 ms
+ Execution Time: 2.416 ms
+(22 rows)
+
+=== Query 2: jumlah servis per bulan satu mekanik sejak 1 Januari 2025 (percobaan 2)
+                                                                          QUERY PLAN                                                                           
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=199.00..201.52 rows=1005 width=53) (actual time=0.800..0.801 rows=12 loops=1)
+   Sort Key: (to_char((s.tgl_servis)::timestamp with time zone, 'YYYY-MM'::text))
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=8
+   ->  HashAggregate  (cost=133.81..148.89 rows=1005 width=53) (actual time=0.787..0.792 rows=12 loops=1)
+         Group Key: to_char((s.tgl_servis)::timestamp with time zone, 'YYYY-MM'::text), m.nama
+         Batches: 1  Memory Usage: 73kB
+         Buffers: shared hit=8
+         ->  Nested Loop  (cost=0.42..113.41 rows=2721 width=45) (actual time=0.006..0.521 rows=2821 loops=1)
+               Buffers: shared hit=8
+               ->  Seq Scan on mekanik m  (cost=0.00..1.75 rows=1 width=17) (actual time=0.002..0.003 rows=1 loops=1)
+                     Filter: (id_mekanik = 7)
+                     Rows Removed by Filter: 59
+                     Buffers: shared hit=1
+               ->  Index Only Scan using idx_servis_mekanik_tgl on servis s  (cost=0.42..70.84 rows=2721 width=8) (actual time=0.004..0.077 rows=2821 loops=1)
+                     Index Cond: ((id_mekanik = 7) AND (tgl_servis >= '2025-01-01'::date))
+                     Heap Fetches: 0
+                     Buffers: shared hit=7
+ Planning Time: 0.023 ms
+ Execution Time: 0.807 ms
+(20 rows)
+
+=== Query 2: jumlah servis per bulan satu mekanik sejak 1 Januari 2025 (percobaan 3)
+                                                                          QUERY PLAN                                                                           
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=199.00..201.52 rows=1005 width=53) (actual time=0.796..0.796 rows=12 loops=1)
+   Sort Key: (to_char((s.tgl_servis)::timestamp with time zone, 'YYYY-MM'::text))
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=8
+   ->  HashAggregate  (cost=133.81..148.89 rows=1005 width=53) (actual time=0.783..0.788 rows=12 loops=1)
+         Group Key: to_char((s.tgl_servis)::timestamp with time zone, 'YYYY-MM'::text), m.nama
+         Batches: 1  Memory Usage: 73kB
+         Buffers: shared hit=8
+         ->  Nested Loop  (cost=0.42..113.41 rows=2721 width=45) (actual time=0.005..0.519 rows=2821 loops=1)
+               Buffers: shared hit=8
+               ->  Seq Scan on mekanik m  (cost=0.00..1.75 rows=1 width=17) (actual time=0.002..0.003 rows=1 loops=1)
+                     Filter: (id_mekanik = 7)
+                     Rows Removed by Filter: 59
+                     Buffers: shared hit=1
+               ->  Index Only Scan using idx_servis_mekanik_tgl on servis s  (cost=0.42..70.84 rows=2721 width=8) (actual time=0.003..0.073 rows=2821 loops=1)
+                     Index Cond: ((id_mekanik = 7) AND (tgl_servis >= '2025-01-01'::date))
+                     Heap Fetches: 0
+                     Buffers: shared hit=7
+ Planning Time: 0.022 ms
+ Execution Time: 0.801 ms
+(20 rows)
+
+=== Query 3: penjualan item mahal (harga Rp250.000 ke atas) per item (percobaan 1)
+                                                                                           QUERY PLAN                                                                                           
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=6337.43..6337.78 rows=142 width=35) (actual time=12.495..12.913 rows=18 loops=1)
+   Sort Key: (sum((d.qty * d.harga_saat_servis))) DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=96 read=684 written=223
+   ->  Finalize GroupAggregate  (cost=6295.67..6332.35 rows=142 width=35) (actual time=12.472..12.909 rows=18 loops=1)
+         Group Key: i.nama_item
+         Buffers: shared hit=93 read=684 written=223
+         ->  Gather Merge  (cost=6295.67..6328.80 rows=284 width=35) (actual time=12.469..12.898 rows=52 loops=1)
+               Workers Planned: 2
+               Workers Launched: 2
+               Buffers: shared hit=93 read=684 written=223
+               ->  Sort  (cost=5295.64..5296.00 rows=142 width=35) (actual time=11.163..11.164 rows=17 loops=3)
+                     Sort Key: i.nama_item
+                     Sort Method: quicksort  Memory: 25kB
+                     Buffers: shared hit=93 read=684 written=223
+                     Worker 0:  Sort Method: quicksort  Memory: 25kB
+                     Worker 1:  Sort Method: quicksort  Memory: 25kB
+                     ->  Partial HashAggregate  (cost=5289.15..5290.57 rows=142 width=35) (actual time=11.126..11.128 rows=17 loops=3)
+                           Group Key: i.nama_item
+                           Batches: 1  Memory Usage: 40kB
+                           Buffers: shared hit=77 read=684 written=223
+                           Worker 0:  Batches: 1  Memory Usage: 40kB
+                           Worker 1:  Batches: 1  Memory Usage: 40kB
+                           ->  Hash Join  (cost=5.62..4559.67 rows=72948 width=27) (actual time=0.078..6.858 rows=59298 loops=3)
+                                 Hash Cond: (d.id_item = i.id_item)
+                                 Buffers: shared hit=77 read=684 written=223
+                                 ->  Parallel Index Only Scan using idx_detail_mahal on detail_servis d  (cost=0.42..4357.27 rows=72948 width=12) (actual time=0.031..2.890 rows=59298 loops=3)
+                                       Heap Fetches: 0
+                                       Buffers: shared hit=3 read=684 written=223
+                                 ->  Hash  (cost=3.42..3.42 rows=142 width=23) (actual time=0.038..0.038 rows=142 loops=3)
+                                       Buckets: 1024  Batches: 1  Memory Usage: 16kB
+                                       Buffers: shared hit=46
+                                       ->  Seq Scan on item i  (cost=0.00..3.42 rows=142 width=23) (actual time=0.022..0.028 rows=142 loops=3)
+                                             Buffers: shared hit=46
+ Planning:
+   Buffers: shared hit=68
+ Planning Time: 0.133 ms
+ Execution Time: 12.925 ms
+(38 rows)
+
+=== Query 3: penjualan item mahal (harga Rp250.000 ke atas) per item (percobaan 2)
+                                                                                           QUERY PLAN                                                                                           
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=6337.43..6337.78 rows=142 width=35) (actual time=11.852..12.208 rows=18 loops=1)
+   Sort Key: (sum((d.qty * d.harga_saat_servis))) DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=777
+   ->  Finalize GroupAggregate  (cost=6295.67..6332.35 rows=142 width=35) (actual time=11.838..12.206 rows=18 loops=1)
+         Group Key: i.nama_item
+         Buffers: shared hit=777
+         ->  Gather Merge  (cost=6295.67..6328.80 rows=284 width=35) (actual time=11.837..12.200 rows=52 loops=1)
+               Workers Planned: 2
+               Workers Launched: 2
+               Buffers: shared hit=777
+               ->  Sort  (cost=5295.64..5296.00 rows=142 width=35) (actual time=10.551..10.552 rows=17 loops=3)
+                     Sort Key: i.nama_item
+                     Sort Method: quicksort  Memory: 25kB
+                     Buffers: shared hit=777
+                     Worker 0:  Sort Method: quicksort  Memory: 25kB
+                     Worker 1:  Sort Method: quicksort  Memory: 25kB
+                     ->  Partial HashAggregate  (cost=5289.15..5290.57 rows=142 width=35) (actual time=10.519..10.521 rows=17 loops=3)
+                           Group Key: i.nama_item
+                           Batches: 1  Memory Usage: 40kB
+                           Buffers: shared hit=761
+                           Worker 0:  Batches: 1  Memory Usage: 40kB
+                           Worker 1:  Batches: 1  Memory Usage: 40kB
+                           ->  Hash Join  (cost=5.62..4559.67 rows=72948 width=27) (actual time=0.062..6.246 rows=59298 loops=3)
+                                 Hash Cond: (d.id_item = i.id_item)
+                                 Buffers: shared hit=761
+                                 ->  Parallel Index Only Scan using idx_detail_mahal on detail_servis d  (cost=0.42..4357.27 rows=72948 width=12) (actual time=0.016..2.269 rows=59298 loops=3)
+                                       Heap Fetches: 0
+                                       Buffers: shared hit=687
+                                 ->  Hash  (cost=3.42..3.42 rows=142 width=23) (actual time=0.038..0.039 rows=142 loops=3)
+                                       Buckets: 1024  Batches: 1  Memory Usage: 16kB
+                                       Buffers: shared hit=46
+                                       ->  Seq Scan on item i  (cost=0.00..3.42 rows=142 width=23) (actual time=0.023..0.028 rows=142 loops=3)
+                                             Buffers: shared hit=46
+ Planning:
+   Buffers: shared hit=4
+ Planning Time: 0.048 ms
+ Execution Time: 12.219 ms
+(38 rows)
+
+=== Query 3: penjualan item mahal (harga Rp250.000 ke atas) per item (percobaan 3)
+                                                                                           QUERY PLAN                                                                                           
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=6337.43..6337.78 rows=142 width=35) (actual time=11.537..11.914 rows=18 loops=1)
+   Sort Key: (sum((d.qty * d.harga_saat_servis))) DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=777
+   ->  Finalize GroupAggregate  (cost=6295.67..6332.35 rows=142 width=35) (actual time=11.517..11.911 rows=18 loops=1)
+         Group Key: i.nama_item
+         Buffers: shared hit=777
+         ->  Gather Merge  (cost=6295.67..6328.80 rows=284 width=35) (actual time=11.515..11.901 rows=52 loops=1)
+               Workers Planned: 2
+               Workers Launched: 2
+               Buffers: shared hit=777
+               ->  Sort  (cost=5295.64..5296.00 rows=142 width=35) (actual time=10.354..10.354 rows=17 loops=3)
+                     Sort Key: i.nama_item
+                     Sort Method: quicksort  Memory: 25kB
+                     Buffers: shared hit=777
+                     Worker 0:  Sort Method: quicksort  Memory: 25kB
+                     Worker 1:  Sort Method: quicksort  Memory: 25kB
+                     ->  Partial HashAggregate  (cost=5289.15..5290.57 rows=142 width=35) (actual time=10.324..10.326 rows=17 loops=3)
+                           Group Key: i.nama_item
+                           Batches: 1  Memory Usage: 40kB
+                           Buffers: shared hit=761
+                           Worker 0:  Batches: 1  Memory Usage: 40kB
+                           Worker 1:  Batches: 1  Memory Usage: 40kB
+                           ->  Hash Join  (cost=5.62..4559.67 rows=72948 width=27) (actual time=0.058..6.054 rows=59298 loops=3)
+                                 Hash Cond: (d.id_item = i.id_item)
+                                 Buffers: shared hit=761
+                                 ->  Parallel Index Only Scan using idx_detail_mahal on detail_servis d  (cost=0.42..4357.27 rows=72948 width=12) (actual time=0.015..2.123 rows=59298 loops=3)
+                                       Heap Fetches: 0
+                                       Buffers: shared hit=687
+                                 ->  Hash  (cost=3.42..3.42 rows=142 width=23) (actual time=0.036..0.036 rows=142 loops=3)
+                                       Buckets: 1024  Batches: 1  Memory Usage: 16kB
+                                       Buffers: shared hit=46
+                                       ->  Seq Scan on item i  (cost=0.00..3.42 rows=142 width=23) (actual time=0.021..0.026 rows=142 loops=3)
+                                             Buffers: shared hit=46
+ Planning:
+   Buffers: shared hit=4
+ Planning Time: 0.036 ms
+ Execution Time: 11.920 ms
+(38 rows)
+

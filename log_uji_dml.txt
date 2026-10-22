@@ -1,0 +1,165 @@
+Timing is on.
+DROP INDEX
+Time: 0.671 ms
+DROP INDEX
+Time: 0.198 ms
+DROP INDEX
+Time: 0.242 ms
+VACUUM
+Time: 0.143 ms
+VACUUM
+Time: 0.118 ms
+=== TANPA indeks tambahan (percobaan 1)
+BEGIN
+Time: 0.018 ms
+--- INSERT 50.000 servis
+INSERT 0 50000
+Time: 296.421 ms
+--- INSERT 50.000 detail_servis (harga Rp350.000)
+INSERT 0 50000
+Time: 298.891 ms
+--- UPDATE 50.000 servis (tanggal dan mekanik diubah)
+UPDATE 50000
+Time: 297.447 ms
+--- DELETE 50.000 detail_servis
+DELETE 50000
+Time: 17.931 ms
+--- DELETE 50.000 servis
+DELETE 50000
+Time: 203.165 ms
+ROLLBACK
+Time: 0.068 ms
+VACUUM
+Time: 15.132 ms
+VACUUM
+Time: 11.053 ms
+=== TANPA indeks tambahan (percobaan 2)
+BEGIN
+Time: 0.021 ms
+--- INSERT 50.000 servis
+INSERT 0 50000
+Time: 299.674 ms
+--- INSERT 50.000 detail_servis (harga Rp350.000)
+INSERT 0 50000
+Time: 293.723 ms
+--- UPDATE 50.000 servis (tanggal dan mekanik diubah)
+UPDATE 50000
+Time: 258.415 ms
+--- DELETE 50.000 detail_servis
+DELETE 50000
+Time: 15.036 ms
+--- DELETE 50.000 servis
+DELETE 50000
+Time: 197.649 ms
+ROLLBACK
+Time: 0.051 ms
+VACUUM
+Time: 12.287 ms
+VACUUM
+Time: 10.004 ms
+=== TANPA indeks tambahan (percobaan 3)
+BEGIN
+Time: 0.023 ms
+--- INSERT 50.000 servis
+INSERT 0 50000
+Time: 298.057 ms
+--- INSERT 50.000 detail_servis (harga Rp350.000)
+INSERT 0 50000
+Time: 293.757 ms
+--- UPDATE 50.000 servis (tanggal dan mekanik diubah)
+UPDATE 50000
+Time: 259.147 ms
+--- DELETE 50.000 detail_servis
+DELETE 50000
+Time: 9.669 ms
+--- DELETE 50.000 servis
+DELETE 50000
+Time: 195.991 ms
+ROLLBACK
+Time: 0.053 ms
+VACUUM
+Time: 12.568 ms
+VACUUM
+Time: 9.717 ms
+CREATE INDEX
+Time: 98.053 ms
+CREATE INDEX
+Time: 96.806 ms
+CREATE INDEX
+Time: 76.598 ms
+VACUUM
+Time: 22.234 ms
+VACUUM
+Time: 34.419 ms
+=== DENGAN indeks tambahan (percobaan 1)
+BEGIN
+Time: 0.019 ms
+--- INSERT 50.000 servis
+INSERT 0 50000
+Time: 468.345 ms
+--- INSERT 50.000 detail_servis (harga Rp350.000)
+INSERT 0 50000
+Time: 368.028 ms
+--- UPDATE 50.000 servis (tanggal dan mekanik diubah)
+UPDATE 50000
+Time: 569.897 ms
+--- DELETE 50.000 detail_servis
+DELETE 50000
+Time: 50.481 ms
+--- DELETE 50.000 servis
+DELETE 50000
+Time: 184.138 ms
+ROLLBACK
+Time: 0.103 ms
+VACUUM
+Time: 23.694 ms
+VACUUM
+Time: 12.213 ms
+=== DENGAN indeks tambahan (percobaan 2)
+BEGIN
+Time: 0.018 ms
+--- INSERT 50.000 servis
+INSERT 0 50000
+Time: 486.474 ms
+--- INSERT 50.000 detail_servis (harga Rp350.000)
+INSERT 0 50000
+Time: 367.970 ms
+--- UPDATE 50.000 servis (tanggal dan mekanik diubah)
+UPDATE 50000
+Time: 484.864 ms
+--- DELETE 50.000 detail_servis
+DELETE 50000
+Time: 38.883 ms
+--- DELETE 50.000 servis
+DELETE 50000
+Time: 191.734 ms
+ROLLBACK
+Time: 0.051 ms
+VACUUM
+Time: 16.894 ms
+VACUUM
+Time: 11.513 ms
+=== DENGAN indeks tambahan (percobaan 3)
+BEGIN
+Time: 0.022 ms
+--- INSERT 50.000 servis
+INSERT 0 50000
+Time: 431.515 ms
+--- INSERT 50.000 detail_servis (harga Rp350.000)
+INSERT 0 50000
+Time: 359.412 ms
+--- UPDATE 50.000 servis (tanggal dan mekanik diubah)
+UPDATE 50000
+Time: 371.620 ms
+--- DELETE 50.000 detail_servis
+DELETE 50000
+Time: 8.514 ms
+--- DELETE 50.000 servis
+DELETE 50000
+Time: 178.839 ms
+ROLLBACK
+Time: 0.051 ms
+VACUUM
+Time: 16.154 ms
+VACUUM
+Time: 11.301 ms
