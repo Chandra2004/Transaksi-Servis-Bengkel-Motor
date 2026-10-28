@@ -1,165 +1,134 @@
-Timing is on.
-DROP INDEX
-Time: 0.671 ms
-DROP INDEX
-Time: 0.198 ms
-DROP INDEX
-Time: 0.242 ms
-VACUUM
-Time: 0.143 ms
-VACUUM
-Time: 0.118 ms
-=== TANPA indeks tambahan (percobaan 1)
-BEGIN
-Time: 0.018 ms
---- INSERT 50.000 servis
-INSERT 0 50000
-Time: 296.421 ms
---- INSERT 50.000 detail_servis (harga Rp350.000)
-INSERT 0 50000
-Time: 298.891 ms
---- UPDATE 50.000 servis (tanggal dan mekanik diubah)
-UPDATE 50000
-Time: 297.447 ms
---- DELETE 50.000 detail_servis
-DELETE 50000
-Time: 17.931 ms
---- DELETE 50.000 servis
-DELETE 50000
-Time: 203.165 ms
-ROLLBACK
-Time: 0.068 ms
-VACUUM
-Time: 15.132 ms
-VACUUM
-Time: 11.053 ms
-=== TANPA indeks tambahan (percobaan 2)
-BEGIN
-Time: 0.021 ms
---- INSERT 50.000 servis
-INSERT 0 50000
-Time: 299.674 ms
---- INSERT 50.000 detail_servis (harga Rp350.000)
-INSERT 0 50000
-Time: 293.723 ms
---- UPDATE 50.000 servis (tanggal dan mekanik diubah)
-UPDATE 50000
-Time: 258.415 ms
---- DELETE 50.000 detail_servis
-DELETE 50000
-Time: 15.036 ms
---- DELETE 50.000 servis
-DELETE 50000
-Time: 197.649 ms
-ROLLBACK
-Time: 0.051 ms
-VACUUM
-Time: 12.287 ms
-VACUUM
-Time: 10.004 ms
-=== TANPA indeks tambahan (percobaan 3)
-BEGIN
-Time: 0.023 ms
---- INSERT 50.000 servis
-INSERT 0 50000
-Time: 298.057 ms
---- INSERT 50.000 detail_servis (harga Rp350.000)
-INSERT 0 50000
-Time: 293.757 ms
---- UPDATE 50.000 servis (tanggal dan mekanik diubah)
-UPDATE 50000
-Time: 259.147 ms
---- DELETE 50.000 detail_servis
-DELETE 50000
-Time: 9.669 ms
---- DELETE 50.000 servis
-DELETE 50000
-Time: 195.991 ms
-ROLLBACK
-Time: 0.053 ms
-VACUUM
-Time: 12.568 ms
-VACUUM
-Time: 9.717 ms
-CREATE INDEX
-Time: 98.053 ms
-CREATE INDEX
-Time: 96.806 ms
-CREATE INDEX
-Time: 76.598 ms
-VACUUM
-Time: 22.234 ms
-VACUUM
-Time: 34.419 ms
-=== DENGAN indeks tambahan (percobaan 1)
-BEGIN
-Time: 0.019 ms
---- INSERT 50.000 servis
-INSERT 0 50000
-Time: 468.345 ms
---- INSERT 50.000 detail_servis (harga Rp350.000)
-INSERT 0 50000
-Time: 368.028 ms
---- UPDATE 50.000 servis (tanggal dan mekanik diubah)
-UPDATE 50000
-Time: 569.897 ms
---- DELETE 50.000 detail_servis
-DELETE 50000
-Time: 50.481 ms
---- DELETE 50.000 servis
-DELETE 50000
-Time: 184.138 ms
-ROLLBACK
+-- Log uji DML (50.000 baris, di dalam BEGIN ... ROLLBACK)
+-- PostgreSQL 17.11, database bengkel_motor
+
+-- DML tanpa indeks, percobaan 1
+$ psql -q -d bengkel_motor
+bengkel_motor=# BEGIN;
+Time: 0.313 ms
+bengkel_motor=*# INSERT INTO servis
+bengkel_motor-*# SELECT 500000 + i, DATE '2025-01-01' + i % 365, 1 + i % 120000, 1 + i % 60
+bengkel_motor-*# FROM generate_series(1, 50000) AS i;
+Time: 297.258 ms
+bengkel_motor=*# INSERT INTO detail_servis
+bengkel_motor-*# SELECT 500000 + i, 7, 1, 350000
+bengkel_motor-*# FROM generate_series(1, 50000) AS i;
+Time: 266.397 ms
+bengkel_motor=*# UPDATE servis SET tgl_servis = tgl_servis + 1, id_mekanik = 1 + id_mekanik % 60
+bengkel_motor-*# WHERE id_servis <= 50000;
+Time: 215.910 ms
+bengkel_motor=*# DELETE FROM detail_servis WHERE id_servis > 500000;
+Time: 12.687 ms
+bengkel_motor=*# DELETE FROM servis WHERE id_servis > 500000;
+Time: 200.402 ms
+bengkel_motor=*# ROLLBACK;
 Time: 0.103 ms
-VACUUM
-Time: 23.694 ms
-VACUUM
-Time: 12.213 ms
-=== DENGAN indeks tambahan (percobaan 2)
-BEGIN
-Time: 0.018 ms
---- INSERT 50.000 servis
-INSERT 0 50000
-Time: 486.474 ms
---- INSERT 50.000 detail_servis (harga Rp350.000)
-INSERT 0 50000
-Time: 367.970 ms
---- UPDATE 50.000 servis (tanggal dan mekanik diubah)
-UPDATE 50000
-Time: 484.864 ms
---- DELETE 50.000 detail_servis
-DELETE 50000
-Time: 38.883 ms
---- DELETE 50.000 servis
-DELETE 50000
-Time: 191.734 ms
-ROLLBACK
-Time: 0.051 ms
-VACUUM
-Time: 16.894 ms
-VACUUM
-Time: 11.513 ms
-=== DENGAN indeks tambahan (percobaan 3)
-BEGIN
-Time: 0.022 ms
---- INSERT 50.000 servis
-INSERT 0 50000
-Time: 431.515 ms
---- INSERT 50.000 detail_servis (harga Rp350.000)
-INSERT 0 50000
-Time: 359.412 ms
---- UPDATE 50.000 servis (tanggal dan mekanik diubah)
-UPDATE 50000
-Time: 371.620 ms
---- DELETE 50.000 detail_servis
-DELETE 50000
-Time: 8.514 ms
---- DELETE 50.000 servis
-DELETE 50000
-Time: 178.839 ms
-ROLLBACK
-Time: 0.051 ms
-VACUUM
-Time: 16.154 ms
-VACUUM
-Time: 11.301 ms
+
+-- DML tanpa indeks, percobaan 2
+$ psql -q -d bengkel_motor
+bengkel_motor=# BEGIN;
+Time: 0.328 ms
+bengkel_motor=*# INSERT INTO servis
+bengkel_motor-*# SELECT 500000 + i, DATE '2025-01-01' + i % 365, 1 + i % 120000, 1 + i % 60
+bengkel_motor-*# FROM generate_series(1, 50000) AS i;
+Time: 281.914 ms
+bengkel_motor=*# INSERT INTO detail_servis
+bengkel_motor-*# SELECT 500000 + i, 7, 1, 350000
+bengkel_motor-*# FROM generate_series(1, 50000) AS i;
+Time: 263.890 ms
+bengkel_motor=*# UPDATE servis SET tgl_servis = tgl_servis + 1, id_mekanik = 1 + id_mekanik % 60
+bengkel_motor-*# WHERE id_servis <= 50000;
+Time: 230.224 ms
+bengkel_motor=*# DELETE FROM detail_servis WHERE id_servis > 500000;
+Time: 15.900 ms
+bengkel_motor=*# DELETE FROM servis WHERE id_servis > 500000;
+Time: 204.581 ms
+bengkel_motor=*# ROLLBACK;
+Time: 0.110 ms
+
+-- DML tanpa indeks, percobaan 3
+$ psql -q -d bengkel_motor
+bengkel_motor=# BEGIN;
+Time: 0.128 ms
+bengkel_motor=*# INSERT INTO servis
+bengkel_motor-*# SELECT 500000 + i, DATE '2025-01-01' + i % 365, 1 + i % 120000, 1 + i % 60
+bengkel_motor-*# FROM generate_series(1, 50000) AS i;
+Time: 295.089 ms
+bengkel_motor=*# INSERT INTO detail_servis
+bengkel_motor-*# SELECT 500000 + i, 7, 1, 350000
+bengkel_motor-*# FROM generate_series(1, 50000) AS i;
+Time: 275.392 ms
+bengkel_motor=*# UPDATE servis SET tgl_servis = tgl_servis + 1, id_mekanik = 1 + id_mekanik % 60
+bengkel_motor-*# WHERE id_servis <= 50000;
+Time: 224.418 ms
+bengkel_motor=*# DELETE FROM detail_servis WHERE id_servis > 500000;
+Time: 14.233 ms
+bengkel_motor=*# DELETE FROM servis WHERE id_servis > 500000;
+Time: 191.690 ms
+bengkel_motor=*# ROLLBACK;
+Time: 0.118 ms
+
+-- DML dengan indeks, percobaan 1
+$ psql -q -d bengkel_motor
+bengkel_motor=# BEGIN;
+Time: 0.247 ms
+bengkel_motor=*# INSERT INTO servis
+bengkel_motor-*# SELECT 500000 + i, DATE '2025-01-01' + i % 365, 1 + i % 120000, 1 + i % 60
+bengkel_motor-*# FROM generate_series(1, 50000) AS i;
+Time: 430.856 ms
+bengkel_motor=*# INSERT INTO detail_servis
+bengkel_motor-*# SELECT 500000 + i, 7, 1, 350000
+bengkel_motor-*# FROM generate_series(1, 50000) AS i;
+Time: 307.450 ms
+bengkel_motor=*# UPDATE servis SET tgl_servis = tgl_servis + 1, id_mekanik = 1 + id_mekanik % 60
+bengkel_motor-*# WHERE id_servis <= 50000;
+Time: 402.897 ms
+bengkel_motor=*# DELETE FROM detail_servis WHERE id_servis > 500000;
+Time: 24.604 ms
+bengkel_motor=*# DELETE FROM servis WHERE id_servis > 500000;
+Time: 206.085 ms
+bengkel_motor=*# ROLLBACK;
+Time: 0.127 ms
+
+-- DML dengan indeks, percobaan 2
+$ psql -q -d bengkel_motor
+bengkel_motor=# BEGIN;
+Time: 0.178 ms
+bengkel_motor=*# INSERT INTO servis
+bengkel_motor-*# SELECT 500000 + i, DATE '2025-01-01' + i % 365, 1 + i % 120000, 1 + i % 60
+bengkel_motor-*# FROM generate_series(1, 50000) AS i;
+Time: 358.162 ms
+bengkel_motor=*# INSERT INTO detail_servis
+bengkel_motor-*# SELECT 500000 + i, 7, 1, 350000
+bengkel_motor-*# FROM generate_series(1, 50000) AS i;
+Time: 304.603 ms
+bengkel_motor=*# UPDATE servis SET tgl_servis = tgl_servis + 1, id_mekanik = 1 + id_mekanik % 60
+bengkel_motor-*# WHERE id_servis <= 50000;
+Time: 382.296 ms
+bengkel_motor=*# DELETE FROM detail_servis WHERE id_servis > 500000;
+Time: 21.437 ms
+bengkel_motor=*# DELETE FROM servis WHERE id_servis > 500000;
+Time: 198.184 ms
+bengkel_motor=*# ROLLBACK;
+Time: 0.113 ms
+
+-- DML dengan indeks, percobaan 3
+$ psql -q -d bengkel_motor
+bengkel_motor=# BEGIN;
+Time: 0.390 ms
+bengkel_motor=*# INSERT INTO servis
+bengkel_motor-*# SELECT 500000 + i, DATE '2025-01-01' + i % 365, 1 + i % 120000, 1 + i % 60
+bengkel_motor-*# FROM generate_series(1, 50000) AS i;
+Time: 372.252 ms
+bengkel_motor=*# INSERT INTO detail_servis
+bengkel_motor-*# SELECT 500000 + i, 7, 1, 350000
+bengkel_motor-*# FROM generate_series(1, 50000) AS i;
+Time: 301.354 ms
+bengkel_motor=*# UPDATE servis SET tgl_servis = tgl_servis + 1, id_mekanik = 1 + id_mekanik % 60
+bengkel_motor-*# WHERE id_servis <= 50000;
+Time: 365.418 ms
+bengkel_motor=*# DELETE FROM detail_servis WHERE id_servis > 500000;
+Time: 25.770 ms
+bengkel_motor=*# DELETE FROM servis WHERE id_servis > 500000;
+Time: 201.097 ms
+bengkel_motor=*# ROLLBACK;
+Time: 0.148 ms
